@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Executive Summary</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-2: #eef2f8;
+      --text: #121826;
+      --muted: #5b6475;
+      --border: rgba(18, 24, 38, 0.12);
+      --accent: #335cff;
+      --accent-2: #0f766e;
+      --danger: #b42318;
+      --shadow: 0 10px 30px rgba(18, 24, 38, 0.08);
+      --radius: 18px;
+      --maxw: 1120px;
+      --line: 1.65;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: var(--line);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a { color: var(--accent); text-decoration: none; word-break: break-word; overflow-wrap: break-word; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc-item {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .toc-link:hover {
+      background: var(--surface-2);
+    }
+
+    .toc-link.active {
+      background: var(--accent);
+      color: #1a1a1a;
+    }
+
+    /* Color-coded TOC items — 10 color slots */
+    .toc-item:nth-child(1) .toc-link { border-left: 4px solid #2d6a4f; background: rgba(184, 224, 208, 0.3); }
+    .toc-item:nth-child(2) .toc-link { border-left: 4px solid #1d3557; background: rgba(197, 213, 216, 0.3); }
+    .toc-item:nth-child(3) .toc-link { border-left: 4px solid #457b9d; background: rgba(200, 223, 240, 0.3); }
+    .toc-item:nth-child(4) .toc-link { border-left: 4px solid #4a4e69; background: rgba(192, 201, 208, 0.3); }
+    .toc-item:nth-child(5) .toc-link { border-left: 4px solid #9d4edd; background: rgba(237, 213, 206, 0.3); }
+    .toc-item:nth-child(6) .toc-link { border-left: 4px solid #6c757d; background: rgba(197, 200, 202, 0.3); }
+    .toc-item:nth-child(7) .toc-link { border-left: 4px solid #40916c; background: rgba(192, 230, 208, 0.3); }
+    .toc-item:nth-child(8) .toc-link { border-left: 4px solid #7b2cbf; background: rgba(224, 208, 232, 0.3); }
+    .toc-item:nth-child(9) .toc-link { border-left: 4px solid #d4a373; background: rgba(240, 224, 192, 0.3); }
+    .toc-item:nth-child(10) .toc-link { border-left: 4px solid #5c677d; background: rgba(200, 213, 229, 0.3); }
+
+    .toc-item:nth-child(1) .toc-link.active { background: #b8e0d0; }
+    .toc-item:nth-child(2) .toc-link.active { background: #c5d5d8; }
+    .toc-item:nth-child(3) .toc-link.active { background: #c8dff0; }
+    .toc-item:nth-child(4) .toc-link.active { background: #c0c9d0; }
+    .toc-item:nth-child(5) .toc-link.active { background: #edd5ce; }
+    .toc-item:nth-child(6) .toc-link.active { background: #c5c8ca; }
+    .toc-item:nth-child(7) .toc-link.active { background: #c0e6d0; }
+    .toc-item:nth-child(8) .toc-link.active { background: #e0d0e8; }
+    .toc-item:nth-child(9) .toc-link.active { background: #f0e0c0; }
+    .toc-item:nth-child(10) .toc-link.active { background: #c8d5e5; }
+
+    .toc-sublist {
+      list-style: none;
+      padding-left: 16px;
+      margin: 4px 0 0;
+    }
+
+    .toc-sublist.collapsed { display: none; }
+
+    .toc-subitem {
+      margin-bottom: 4px;
+    }
+
+    .toc-sublink {
+      font-size: 0.9rem;
+      padding: 4px 8px;
+      color: var(--muted);
+    }
+
+    .toc-sublink:hover {
+      background: var(--surface-2);
+    }
+
+    .toc-sublink.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      padding: 24px;
+      max-width: calc(100% - var(--sidebar-width));
+    }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+    }
+
+    .hero { padding: 34px 0 18px; }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 16ch;
+    }
+
+    .lede {
+      max-width: 70ch;
+      font-size: 1.06rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    @media (max-width: 900px) {
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; }
+      .main-content { max-width: 100%; padding: 16px; }
+      .toc-title { display: none; }
+      .toc-list { display: flex; flex-wrap: wrap; gap: 8px; }
+      .toc-item { flex: 1 1 auto; }
+      .toc-link { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .toc-sublist.collapsed { display: none; }
+      .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stat strong { font-size: 1.8rem; letter-spacing: -0.03em; }
+    .stat span { color: var(--muted); }
+
+    /* Content sections — 10 color slots, rotate for >10 */
+    .section {
+      margin: 30px 0;
+      padding: 24px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--border);
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 1.45rem;
+      letter-spacing: -0.02em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section h3 {
+      margin: 20px 0 10px;
+      font-size: 1.1rem;
+    }
+
+    /* Section color slots — matches TOC colors */
+    #section-1  { background: #d9eae0; border-left-color: #2d6a4f; }
+    #section-2  { background: #dde6e7; border-left-color: #1d3557; }
+    #section-3  { background: #e4eff7; border-left-color: #457b9d; }
+    #section-4  { background: #d7dfe4; border-left-color: #4a4e69; }
+    #section-5  { background: #f6e9e5; border-left-color: #9d4edd; }
+    #section-6  { background: #dde0e2; border-left-color: #6c757d; }
+    #section-7  { background: #e1f4e8; border-left-color: #40916c; }
+    #section-8  { background: #f0e6f5; border-left-color: #7b2cbf; }
+    #section-9  { background: #fff2d9; border-left-color: #d4a373; }
+    #section-10 { background: #e8f0f7; border-left-color: #5c677d; }
+
+    /* Sub-section cards — lighter shade of parent section */
+    .sub-section {
+      background: rgba(255,255,255,0.5);
+      border-left: 3px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin: 14px 0;
+    }
+
+    #section-1  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #2d6a4f; }
+    #section-2  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #1d3557; }
+    #section-3  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #457b9d; }
+    #section-4  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #4a4e69; }
+    #section-5  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #9d4edd; }
+    #section-6  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #6c757d; }
+    #section-7  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #40916c; }
+    #section-8  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #7b2cbf; }
+    #section-9  .sub-section { background: rgba(255,255,255,0.55); border-left-color: #d4a373; }
+    #section-10 .sub-section { background: rgba(255,255,255,0.55); border-left-color: #5c677d; }
+
+    /* Source cards — used for cited references with URLs */
+    .source-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .source-card blockquote {
+      margin: 0;
+      padding: 0;
+    }
+
+    .source-card p {
+      margin: 8px 0;
+    }
+
+    .source-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .source-url {
+      word-break: break-all;
+      overflow-wrap: break-word;
+    }
+
+    .source-url a {
+      display: block;
+      word-break: break-all;
+    }
+
+    .source-date {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .source-quote {
+      font-style: italic;
+      margin-top: 8px;
+    }
+
+    /* Source-specific border colors */
+    .source-card[data-source="rand"]             { border-left-color: #335cff; }
+    .source-card[data-source="brookings"]        { border-left-color: #0f766e; }
+    .source-card[data-source="csis"]             { border-left-color: #8a2be2; }
+    .source-card[data-source="cfr"]              { border-left-color: #ff7f00; }
+    .source-card[data-source="foreign-affairs"]  { border-left-color: #ff0000; }
+    .source-card[data-source="nyt"]              { border-left-color: #ffd700; }
+    .source-card[data-source="washington-post"]  { border-left-color: #008080; }
+    .source-card[data-source="ifri"]             { border-left-color: #ff69b4; }
+
+    .section ul, .section ol { margin: 0; padding-left: 18px; }
+    .section li { margin: 10px 0; }
+
+    .section table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    .section th, .section td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section th {
+      font-weight: 600;
+      background: var(--surface-2);
+    }
+
+    .muted { color: var(--muted); }
+
+    .tagrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+
+    .callout {
+      border-left: 4px solid var(--accent-2);
+      padding: 16px 18px;
+      background: color-mix(in srgb, var(--accent-2) 10%, var(--surface));
+      border-radius: 14px;
+    }
+
+    .danger {
+      border-left-color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 9%, var(--surface));
+    }
+
+    .footer {
+      padding: 24px 0 40px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      border-top: 1px solid var(--border);
+      margin-top: 30px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    /* Back-to-top floating button — mobile only */
+    .back-to-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .back-to-top:hover {
+      background: var(--surface-2);
+    }
+
+    @media (min-width: 901px) {
+      .back-to-top { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h3 class="toc-title">Contents</h3>
+      <ul class="toc-list">
+        <li class="toc-item"><a href="#section-1" class="toc-link">Institutional Authority and Mandate (The "IPCC for Biodiversity")</a></li>
+<li class="toc-item"><a href="#section-2" class="toc-link">Intergovernmental Approval & Rigorous Process</a></li>
+<li class="toc-item"><a href="#section-3" class="toc-link">Species Extinction Crisis (~1 Million Species at Risk)</a></li>
+<li class="toc-item"><a href="#section-4" class="toc-link">Degradation of Terrestrial, Marine, and Freshwater Ecosystems</a></li>
+<li class="toc-item"><a href="#section-5" class="toc-link">Nature's Contributions to People (Ecosystem Services Deterioration)</a></li>
+<li class="toc-item"><a href="#section-6" class="toc-link">1. Changes in Land and Sea Use</a></li>
+<li class="toc-item"><a href="#section-7" class="toc-link">2. Direct Exploitation of Organisms</a></li>
+<li class="toc-item"><a href="#section-8" class="toc-link">3. Climate Change</a></li>
+<li class="toc-item"><a href="#section-9" class="toc-link">4. Pollution</a></li>
+<li class="toc-item"><a href="#section-10" class="toc-link">5. Invasive Alien Species</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <div class="wrap">
+        <section class="hero">
+          <div class="eyebrow">Research Report</div>
+          <h1>Executive Summary</h1>
+          <p class="lede">The single most important, authoritative source establishing that human activity has caused biodiversity loss and ecosystem deterioration is the IPBES Global Assessment Report on Biodiversity and Ecos</p>
+          <div class="grid cols-3 section">
+            <div class="card stat">
+              <strong>10</strong>
+              <span>Topic Sections</span>
+            </div>
+            <div class="card stat">
+              <strong>0</strong>
+              <span>Sub-Sections</span>
+            </div>
+            <div class="card stat">
+              <strong>16</strong>
+              <span>Sources Cited</span>
+            </div>
+          </div>
+        </section>
+
+        <p>The single most important, authoritative source establishing that human activity has caused biodiversity loss and ecosystem deterioration is the <strong>IPBES Global Assessment Report on Biodiversity and Ecosystem Services (2019)</strong> — the first fully intergovernmental global assessment of nature since the Millennium Ecosystem Assessment (2005). Produced by the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES), commonly called the "IPCC for biodiversity," the report represents a consensus of 145 expert authors from 50 countries synthesizing roughly 15,000 scientific and indigenous/local knowledge sources, with its Summary for Policymakers approved line-by-line by 132 member governments.</p>
+<p>Its central, empirically supported conclusion: biodiversity is declining faster than at any time in human history, ~1 million species face extinction within decades, and the five dominant drivers of this crisis are all anthropogenic. No competing source (WWF Living Planet Report, UNEP GEO) matches its combination of intergovernmental mandate, expert consensus, government approval, breadth of coverage, and direct causal attribution of human drivers.</p>
+<section id="section-1" class="section">
+<h2>Institutional Authority and Mandate (The "IPCC for Biodiversity")</h2>
+<ul>
+<li>
+<p>IPBES is an independent intergovernmental body established by governments in 2012, comprising <strong>over 130 member nations</strong> — explicitly modeled as the biodiversity equivalent of the IPCC.
+  <a href="https://www.ipbes.net/global-assessment">IPBES Global Assessment Portal</a></p>
+</li>
+<li>
+<p>The Global Assessment is the <strong>first fully government-authorised global assessment</strong> of biodiversity and ecosystem services since the Millennium Ecosystem Assessment (2005).
+  <a href="https://link.springer.com/article/10.1007/s10531-019-01804-w">Springer — The IPBES Global Assessment</a></p>
+</li>
+<li>
+<p>Authored by <strong>145 leading international experts from 50 countries</strong>, with inputs from an additional <strong>310 experts</strong>, synthesizing approximately <strong>15,000 scientific, government, and indigenous/local knowledge sources</strong>.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</li>
+<li>
+<p>Full report comprises <strong>six chapters totaling 1,148 pages</strong>, edited by co-chairs E. S. Brondizio, J. Settele, S. Díaz, and H. T. Ngo.
+  <a href="https://www.ipbes.net/ga1">IPBES Global Assessment (GA1)</a></p>
+</li>
+</ul>
+<p>IPBES is an independent intergovernmental body established by governments in 2012, comprising <strong>over 130 member nations</strong> — explicitly modeled as the biodiversity equivalent of the IPCC.
+  <a href="https://www.ipbes.net/global-assessment">IPBES Global Assessment Portal</a></p>
+<p>The Global Assessment is the <strong>first fully government-authorised global assessment</strong> of biodiversity and ecosystem services since the Millennium Ecosystem Assessment (2005).
+  <a href="https://link.springer.com/article/10.1007/s10531-019-01804-w">Springer — The IPBES Global Assessment</a></p>
+<p>Authored by <strong>145 leading international experts from 50 countries</strong>, with inputs from an additional <strong>310 experts</strong>, synthesizing approximately <strong>15,000 scientific, government, and indigenous/local knowledge sources</strong>.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p>Full report comprises <strong>six chapters totaling 1,148 pages</strong>, edited by co-chairs E. S. Brondizio, J. Settele, S. Díaz, and H. T. Ngo.
+  <a href="https://www.ipbes.net/ga1">IPBES Global Assessment (GA1)</a></p>
+</section>
+<section id="section-2" class="section">
+<h2>Intergovernmental Approval &amp; Rigorous Process</h2>
+<ul>
+<li>
+<p>The <strong>Summary for Policymakers (SPM, ~60 pages)</strong> was formally <strong>approved line-by-line by 132 member governments</strong> at the IPBES-7 Plenary in Paris, France (29 April–4 May 2019).
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+</li>
+<li>
+<p>The six underlying chapters were <strong>formally accepted</strong> by governments, with the assessment compiled over <strong>three years</strong>.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</li>
+<li>
+<p><strong>Permanent DOIs</strong> (both corroborated by grok + perplexity):</p>
+</li>
+<li>Summary for Policymakers: <code>10.5281/zenodo.3553579</code></li>
+<li>Full Report: <code>10.5281/zenodo.3831673</code>
+<a href="https://www.ipbes.net/document-library-catalogue/global-assessment-report">IPBES Document Catalogue</a>
+<a href="https://zenodo.org/records/3553579">Zenodo SPM record</a></li>
+</ul>
+<p>The <strong>Summary for Policymakers (SPM, ~60 pages)</strong> was formally <strong>approved line-by-line by 132 member governments</strong> at the IPBES-7 Plenary in Paris, France (29 April–4 May 2019).
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+<p>The six underlying chapters were <strong>formally accepted</strong> by governments, with the assessment compiled over <strong>three years</strong>.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p><strong>Permanent DOIs</strong> (both corroborated by grok + perplexity):</p>
+</section>
+<section id="section-3" class="section">
+<h2>Species Extinction Crisis (~1 Million Species at Risk)</h2>
+<ul>
+<li>
+<p>An estimated <strong>1 million species</strong> — approximately <strong>25% of assessed plant and animal groups</strong> — face extinction, many within decades, unless drivers are reduced. (Corroborated: grok + perplexity)
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</li>
+<li>
+<p>Global species extinction rates are already <strong>tens to hundreds of times higher</strong> than the natural background rate over the past 10 million years, and accelerating.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</li>
+<li>
+<p>More than <strong>40% of amphibian species</strong>, ~<strong>33% of reef-forming corals</strong>, and more than <strong>a third of marine mammals</strong> are threatened.
+  <a href="https://apo.org.au/node/234046">APO — Global Assessment summary</a></p>
+</li>
+<li>
+<p><strong>Biomass inversion:</strong> wild mammal biomass has fallen by <strong>82%</strong>, while humans and domestic livestock now account for roughly <strong>96% of all mammalian biomass</strong> on Earth.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+</li>
+<li>
+<p>Average abundance of native species in most major terrestrial biomes has fallen by <strong>at least 20%</strong>, mostly since 1900.
+  <a href="https://apo.org.au/node/234046">APO — Global Assessment summary</a></p>
+</li>
+</ul>
+<p>An estimated <strong>1 million species</strong> — approximately <strong>25% of assessed plant and animal groups</strong> — face extinction, many within decades, unless drivers are reduced. (Corroborated: grok + perplexity)
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p>Global species extinction rates are already <strong>tens to hundreds of times higher</strong> than the natural background rate over the past 10 million years, and accelerating.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p>More than <strong>40% of amphibian species</strong>, ~<strong>33% of reef-forming corals</strong>, and more than <strong>a third of marine mammals</strong> are threatened.
+  <a href="https://apo.org.au/node/234046">APO — Global Assessment summary</a></p>
+<p><strong>Biomass inversion:</strong> wild mammal biomass has fallen by <strong>82%</strong>, while humans and domestic livestock now account for roughly <strong>96% of all mammalian biomass</strong> on Earth.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+<p>Average abundance of native species in most major terrestrial biomes has fallen by <strong>at least 20%</strong>, mostly since 1900.
+  <a href="https://apo.org.au/node/234046">APO — Global Assessment summary</a></p>
+</section>
+<section id="section-4" class="section">
+<h2>Degradation of Terrestrial, Marine, and Freshwater Ecosystems</h2>
+<ul>
+<li>
+<p><strong>75% of the land surface</strong> has been significantly altered by human actions. (Corroborated: grok + perplexity)
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+</li>
+<li>
+<p><strong>66% of the marine/ocean environment</strong> has been significantly altered by cumulative human pressures (overfishing, pollution, coastal development). (Corroborated: grok + perplexity)
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+</li>
+<li>
+<p><strong>Over 85% of wetlands</strong> present in 1700 have been lost/destroyed by 2000, with loss rates accelerating. (Corroborated: grok + perplexity)
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+</li>
+<li>
+<p>Land degradation has reduced productivity on <strong>23% of global terrestrial area</strong>, risking hundreds of billions of dollars in annual crop output. (Corroborated: grok + perplexity)
+  <a href="https://www.unccd.int/resources/unccd-library/global-assessment-report-biodiversity-and-ecosystem-services">UNCCD — Global Assessment Report library</a></p>
+</li>
+<li>
+<p>Urban areas have <strong>more than doubled since 1992</strong>; plastic pollution has increased <strong>tenfold since 1980</strong>.
+  <a href="https://www.unccd.int/resources/unccd-library/global-assessment-report-biodiversity-and-ecosystem-services">UNCCD — Global Assessment Report library</a></p>
+</li>
+</ul>
+<p><strong>75% of the land surface</strong> has been significantly altered by human actions. (Corroborated: grok + perplexity)
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+<p><strong>66% of the marine/ocean environment</strong> has been significantly altered by cumulative human pressures (overfishing, pollution, coastal development). (Corroborated: grok + perplexity)
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+<p><strong>Over 85% of wetlands</strong> present in 1700 have been lost/destroyed by 2000, with loss rates accelerating. (Corroborated: grok + perplexity)
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+<p>Land degradation has reduced productivity on <strong>23% of global terrestrial area</strong>, risking hundreds of billions of dollars in annual crop output. (Corroborated: grok + perplexity)
+  <a href="https://www.unccd.int/resources/unccd-library/global-assessment-report-biodiversity-and-ecosystem-services">UNCCD — Global Assessment Report library</a></p>
+<p>Urban areas have <strong>more than doubled since 1992</strong>; plastic pollution has increased <strong>tenfold since 1980</strong>.
+  <a href="https://www.unccd.int/resources/unccd-library/global-assessment-report-biodiversity-and-ecosystem-services">UNCCD — Global Assessment Report library</a></p>
+</section>
+<section id="section-5" class="section">
+<h2>Nature's Contributions to People (Ecosystem Services Deterioration)</h2>
+<ul>
+<li>
+<p><strong>14 of 18 categories</strong> of Nature's Contributions to People (NCP) — mostly regulating and non-material contributions — have <strong>declined since 1970</strong>.
+  <a href="https://sdg.iisd.org/?p=728168">IISD SDG Knowledge Hub</a></p>
+</li>
+<li>
+<p>Negative trends undermine progress toward <strong>~80% of assessed SDG targets</strong> (especially SDGs 1, 2, 3, 6, 11, 13, 14, 15).
+  <a href="https://sdg.iisd.org/?p=728168">IISD SDG Knowledge Hub</a></p>
+</li>
+<li>
+<p><strong>Most Aichi Biodiversity Targets for 2020 were missed</strong>, and only "<strong>transformative change</strong>" across economic, social, political, and technological factors can reverse current trajectories.
+  <a href="https://sdg.iisd.org/?p=728168">IISD SDG Knowledge Hub</a></p>
+</li>
+</ul>
+<p><strong>14 of 18 categories</strong> of Nature's Contributions to People (NCP) — mostly regulating and non-material contributions — have <strong>declined since 1970</strong>.
+  <a href="https://sdg.iisd.org/?p=728168">IISD SDG Knowledge Hub</a></p>
+<p>Negative trends undermine progress toward <strong>~80% of assessed SDG targets</strong> (especially SDGs 1, 2, 3, 6, 11, 13, 14, 15).
+  <a href="https://sdg.iisd.org/?p=728168">IISD SDG Knowledge Hub</a></p>
+<p><strong>Most Aichi Biodiversity Targets for 2020 were missed</strong>, and only "<strong>transformative change</strong>" across economic, social, political, and technological factors can reverse current trajectories.
+  <a href="https://sdg.iisd.org/?p=728168">IISD SDG Knowledge Hub</a></p>
+<p>All five drivers are anthropogenic in origin and ranked by descending global aggregate impact. (Ranking corroborated identically by both grok + perplexity.)</p>
+</section>
+<section id="section-6" class="section">
+<h2>1. Changes in Land and Sea Use</h2>
+<ul>
+<li>The <strong>dominant driver</strong> for terrestrial and freshwater systems; agriculture alone uses <strong>&gt;1/3 of the land surface</strong> and ~<strong>75% of freshwater</strong>. Driven by agricultural expansion, urban sprawl, logging, and infrastructure.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a>
+<a href="https://www.ces.vic.gov.au/news/ipbes-global-assessment-report-biodiversity-and-ecosystem-services">Victoria CES — IPBES Global Assessment</a></li>
+</ul>
+</section>
+<section id="section-7" class="section">
+<h2>2. Direct Exploitation of Organisms</h2>
+<ul>
+<li>The <strong>second largest global driver</strong> and the <strong>primary driver in marine environments</strong> — overfishing, destructive trawling, hunting, poaching, logging, and uncontrolled harvesting.
+  <a href="https://www.ipbes.net/sites/default/files/ipbes_7_10_add.1_en_1.pdf">IPBES-7 Working Document</a></li>
+</ul>
+</section>
+<section id="section-8" class="section">
+<h2>3. Climate Change</h2>
+<ul>
+<li>Anthropogenic GHG emissions driving habitat shifts, ocean acidification, more frequent extreme weather, and shifting biome envelopes; it <strong>exacerbates all other drivers</strong>, acting from genes to ecosystems.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></li>
+</ul>
+</section>
+<section id="section-9" class="section">
+<h2>4. Pollution</h2>
+<ul>
+<li>Atmospheric, terrestrial, and marine pollutants — marine plastic up <strong>tenfold since 1980</strong>, untreated heavy metals, industrial toxic waste, and agricultural nutrient runoff creating <strong>hundreds of hypoxic "dead zones."</strong>
+<a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></li>
+</ul>
+</section>
+<section id="section-10" class="section">
+<h2>5. Invasive Alien Species</h2>
+<ul>
+<li>Global transport and trade vectors introducing exotic plants, animals, and pathogens that disrupt native ecosystems and outcompete endemic taxa.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></li>
+</ul>
+<p>Indirect (root) drivers that the report identifies as underlying the five direct drivers:</p>
+<ul>
+<li>
+<p><strong>Demographic &amp; consumption growth:</strong> global human population has <strong>doubled since 1970</strong>, with per-capita consumption and global trade increasing multi-fold, driving resource extraction.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+</li>
+<li>
+<p><strong>Perverse subsidies &amp; economic incentives:</strong> financial systems and subsidies reward environmentally harmful activities (fossil fuels, destructive agriculture, industrial fisheries) and fail to account for externalities.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a>
+<a href="https://knowledge4policy.ec.europa.eu/publication/global-assessment-report-biodiversity-ecosystem-services-intergovernmental-science_en">EU Knowledge4Policy</a></p>
+</li>
+<li>
+<p><strong>Ineffective governance &amp; enforcement deficits:</strong> fragmented policy, weak environmental rule of law, and failure to account for natural capital in GDP/national accounting.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+</li>
+<li>
+<p><strong>Technological innovations</strong> that increase resource extraction and trade intensity (indirect driver identified by grok).
+  <a href="https://knowledge4policy.ec.europa.eu/publication/global-assessment-report-biodiversity-ecosystem-services-intergovernmental-science_en">EU Knowledge4Policy</a></p>
+</li>
+</ul>
+<p><strong>Demographic &amp; consumption growth:</strong> global human population has <strong>doubled since 1970</strong>, with per-capita consumption and global trade increasing multi-fold, driving resource extraction.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+<p><strong>Perverse subsidies &amp; economic incentives:</strong> financial systems and subsidies reward environmentally harmful activities (fossil fuels, destructive agriculture, industrial fisheries) and fail to account for externalities.
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a>
+<a href="https://knowledge4policy.ec.europa.eu/publication/global-assessment-report-biodiversity-ecosystem-services-intergovernmental-science_en">EU Knowledge4Policy</a></p>
+<p><strong>Ineffective governance &amp; enforcement deficits:</strong> fragmented policy, weak environmental rule of law, and failure to account for natural capital in GDP/national accounting.
+  <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES SPM — Official PDF</a></p>
+<p><strong>Technological innovations</strong> that increase resource extraction and trade intensity (indirect driver identified by grok).
+  <a href="https://knowledge4policy.ec.europa.eu/publication/global-assessment-report-biodiversity-ecosystem-services-intergovernmental-science_en">EU Knowledge4Policy</a></p>
+<ul>
+<li>
+<p><strong>vs. WWF Living Planet Report (LPR):</strong> An NGO-led indicator report tracking the Living Planet Index (~68–73% average decline in monitored vertebrate populations since 1970). Strong for communication/tracking, but it <strong>lacks</strong> IPBES's breadth (no full extinction-risk, ecosystem-services, or all-driver assessment), the peer-reviewed expert consensus process, and intergovernmental approval. Complementary, not definitive.
+  <a href="https://sdg.iisd.org/news/natures-recovery-within-reach-despite-wildlifes-73-decline-wwf-report/">IISD — Nature's recovery / WWF 73% decline</a></p>
+</li>
+<li>
+<p><strong>vs. UNEP Global Environment Outlook (GEO):</strong> Broader periodic UNEP-led intergovernmental assessment spanning climate, pollution, resources, etc. Authoritative and government-involved, but IPBES was created <strong>specifically</strong> as the dedicated biodiversity/ecosystem-services platform, yielding deeper targeted analysis of drivers, NCP, and transformative change.
+  <a href="https://knowledge4policy.ec.europa.eu/publication/global-assessment-report-biodiversity-ecosystem-services-intergovernmental-science_en">EU Knowledge4Policy</a></p>
+</li>
+<li>
+<p><strong>Verdict:</strong> IPBES GA 2019 stands above all others for this domain on intergovernmental mandate, expert authorship balanced with government SPM approval, multi-scale and multi-knowledge-system synthesis, and explicit focus on biodiversity, drivers, NCP, and response options.
+  <a href="https://link.springer.com/article/10.1007/s10531-019-01804-w">Springer — The IPBES Global Assessment</a></p>
+</li>
+</ul>
+<p><strong>vs. WWF Living Planet Report (LPR):</strong> An NGO-led indicator report tracking the Living Planet Index (~68–73% average decline in monitored vertebrate populations since 1970). Strong for communication/tracking, but it <strong>lacks</strong> IPBES's breadth (no full extinction-risk, ecosystem-services, or all-driver assessment), the peer-reviewed expert consensus process, and intergovernmental approval. Complementary, not definitive.
+  <a href="https://sdg.iisd.org/news/natures-recovery-within-reach-despite-wildlifes-73-decline-wwf-report/">IISD — Nature's recovery / WWF 73% decline</a></p>
+<p><strong>vs. UNEP Global Environment Outlook (GEO):</strong> Broader periodic UNEP-led intergovernmental assessment spanning climate, pollution, resources, etc. Authoritative and government-involved, but IPBES was created <strong>specifically</strong> as the dedicated biodiversity/ecosystem-services platform, yielding deeper targeted analysis of drivers, NCP, and transformative change.
+  <a href="https://knowledge4policy.ec.europa.eu/publication/global-assessment-report-biodiversity-ecosystem-services-intergovernmental-science_en">EU Knowledge4Policy</a></p>
+<p><strong>Verdict:</strong> IPBES GA 2019 stands above all others for this domain on intergovernmental mandate, expert authorship balanced with government SPM approval, multi-scale and multi-knowledge-system synthesis, and explicit focus on biodiversity, drivers, NCP, and response options.
+  <a href="https://link.springer.com/article/10.1007/s10531-019-01804-w">Springer — The IPBES Global Assessment</a></p>
+<p><strong>Direct causal attribution (the single strongest line for "humans caused it"):</strong></p>
+<blockquote>
+<p>"Ecosystems, species, wild populations, local varieties and breeds of domesticated plants and animals are shrinking, deteriorating or vanishing. The essential, interconnected web of life on Earth is getting smaller and increasingly frayed. <strong>This loss is a direct result of human activity</strong> and constitutes a direct threat to human well-being in all regions of the world." — <strong>Prof. Josef Settele</strong>, Co-Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</blockquote>
+<p>"Ecosystems, species, wild populations, local varieties and breeds of domesticated plants and animals are shrinking, deteriorating or vanishing. The essential, interconnected web of life on Earth is getting smaller and increasingly frayed. <strong>This loss is a direct result of human activity</strong> and constitutes a direct threat to human well-being in all regions of the world." — <strong>Prof. Josef Settele</strong>, Co-Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p><strong>On unprecedented decline:</strong></p>
+<blockquote>
+<p>"Nature is declining globally at rates unprecedented in human history — and the rate of species extinctions is accelerating, with grave impacts on people around the world now likely." — <strong>Sir Robert Watson</strong>, IPBES Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</blockquote>
+<p>"Nature is declining globally at rates unprecedented in human history — and the rate of species extinctions is accelerating, with grave impacts on people around the world now likely." — <strong>Sir Robert Watson</strong>, IPBES Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p><strong>On eroding the foundations of human welfare:</strong></p>
+<blockquote>
+<p>"The overwhelming evidence of the IPBES Global Assessment... presents an ominous picture. The health of ecosystems on which we and all other species depend is deteriorating more rapidly than ever. We are eroding the very foundations of our economies, livelihoods, food security, health and quality of life worldwide." — <strong>Sir Robert Watson</strong>, IPBES Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</blockquote>
+<p>"The overwhelming evidence of the IPBES Global Assessment... presents an ominous picture. The health of ecosystems on which we and all other species depend is deteriorating more rapidly than ever. We are eroding the very foundations of our economies, livelihoods, food security, health and quality of life worldwide." — <strong>Sir Robert Watson</strong>, IPBES Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p><strong>On transformative change (still possible):</strong></p>
+<blockquote>
+<p>"The report also tells us that it is not too late to make a difference, but only if we start now at every level from local to global. Through 'transformative change', nature can still be conserved, restored and used sustainably..." — <strong>Sir Robert Watson</strong>, IPBES Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+</blockquote>
+<p>"The report also tells us that it is not too late to make a difference, but only if we start now at every level from local to global. Through 'transformative change', nature can still be conserved, restored and used sustainably..." — <strong>Sir Robert Watson</strong>, IPBES Chair
+  <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a></p>
+<p><strong>Report's own key messages (direct wording):</strong></p>
+<blockquote>
+<p>"Nature and its vital contributions to people... are deteriorating worldwide."</p>
+<p>"Biodiversity – the diversity within species, between species and of ecosystems – is declining faster than at any time in human history."</p>
+<p>"Human actions threaten more species with global extinction now than ever before."</p>
+</blockquote>
+<p>"Nature and its vital contributions to people... are deteriorating worldwide."</p>
+<p>"Biodiversity – the diversity within species, between species and of ecosystems – is declining faster than at any time in human history."</p>
+<p>"Human actions threaten more species with global extinction now than ever before."</p>
+<p><a href="https://scispace.com/papers/summary-for-policymakers-of-the-global-assessment-report-on-4kad1c8g0n">SciSpace — SPM summary</a></p>
+<p><strong>Debate card — Aff (proves human causation):</strong>
+- Intergovernmental consensus of 132 governments = near-unassailable authority, cannot be dismissed as NGO alarmism.
+- "Human actions threaten more species with global extinction now than ever before" — direct causal attribution.
+- Five direct drivers, all anthropogenic, ranked by measured global impact.</p>
+<p><strong>Debate card — Neg (limits/caveats):</strong>
+- Assessment is descriptive, not prescriptive — does not mandate specific policy, so it does not prove any <em>particular</em> solution.
+- The ~1 million figure is an estimate for species <em>threatened</em>, not <em>confirmed extinctions</em>.
+- The report itself states transformative change is still achievable — which undercuts any doomsday/fatalistic framing.</p>
+<p>Canonical IPBES / official sources:
+- <a href="https://www.ipbes.net/global-assessment">IPBES Global Assessment Portal</a>
+- <a href="https://www.ipbes.net/ga1">IPBES Global Assessment (GA1)</a>
+- <a href="https://files.ipbes.net/ipbes-web-prod-public-files/inline/files/ipbes_global_assessment_report_summary_for_policymakers.pdf">IPBES Summary for Policymakers — Official PDF</a>
+- <a href="https://www.ipbes.net/news/Media-Release-Global-Assessment">IPBES Media Release — Global Assessment</a>
+- <a href="https://www.ipbes.net/document-library-catalogue/global-assessment-report">IPBES Document Catalogue</a>
+- <a href="https://www.ipbes.net/sites/default/files/ipbes_7_10_add.1_en_1.pdf">IPBES-7 Working Document (drivers)</a>
+- <a href="https://zenodo.org/records/3553579">SPM DOI — Zenodo 3553579</a> · DOI <code>10.5281/zenodo.3553579</code>
+- Full Report DOI <code>10.5281/zenodo.3831673</code></p>
+<p>Secondary / corroborating sources:
+- <a href="https://link.springer.com/article/10.1007/s10531-019-01804-w">Springer — The IPBES Global Assessment (authority analysis)</a>
+- <a href="https://www.unccd.int/resources/unccd-library/global-assessment-report-biodiversity-and-ecosystem-services">UNCCD — Global Assessment Report library</a>
+- <a href="https://sdg.iisd.org/?p=728168">IISD SDG Knowledge Hub</a>
+- <a href="https://apo.org.au/node/234046">APO — Global Assessment summary</a>
+- <a href="https://www.ces.vic.gov.au/news/ipbes-global-assessment-report-biodiversity-and-ecosystem-services">Victoria CES — IPBES Global Assessment</a>
+- <a href="https://landportal.org/library/resources/global-assessment-report-biodiversity-and-ecosystem-services-intergovernmental">Land Portal — Global Assessment Report</a>
+- <a href="https://knowledge4policy.ec.europa.eu/publication/global-assessment-report-biodiversity-ecosystem-services-intergovernmental-science_en">EU Knowledge4Policy</a>
+- <a href="https://scispace.com/papers/summary-for-policymakers-of-the-global-assessment-report-on-4kad1c8g0n">SciSpace — SPM summary</a>
+- <a href="https://sdg.iisd.org/news/natures-recovery-within-reach-despite-wildlifes-73-decline-wwf-report/">IISD — WWF Living Planet 73% decline</a></p>
+<p><strong>Full citation:</strong> IPBES (2019). <em>Summary for policymakers of the global assessment report on biodiversity and ecosystem services of the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services.</em> IPBES secretariat, Bonn, Germany. DOI: <code>10.5281/zenodo.3553579</code>.</p>
+</section>
+
+        <footer class="footer">
+          <p>Oracle Research — Executive Summary</p>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">&#9650;</button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sections = document.querySelectorAll('.section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link, .toc-sublink');
+      function updateActiveLink() {
+        let current = '';
+        sections.forEach(function(s) {
+          if (pageYOffset >= s.offsetTop - 100) current = s.getAttribute('id');
+        });
+        tocLinks.forEach(function(link) {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+        });
+      }
+      window.addEventListener('scroll', updateActiveLink);
+      updateActiveLink();
+
+      // Back-to-top button — visible after 300px scroll
+      const btn = document.getElementById('backToTop');
+      window.addEventListener('scroll', function() {
+        btn.classList.toggle('visible', pageYOffset > 300);
+      });
+      btn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Collapsible TOC - click section to toggle sub-items
+      const isMobile = window.innerWidth <= 900;
+      document.querySelectorAll('.toc-item').forEach(function(item) {
+        const sublist = item.querySelector('.toc-sublist');
+        if (!sublist) return;
+        const link = item.querySelector('.toc-link');
+        if (link) link.style.cursor = 'pointer';
+        if (isMobile) sublist.classList.add('collapsed');
+        if (link) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            sublist.classList.toggle('collapsed');
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
